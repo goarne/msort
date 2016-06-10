@@ -4,6 +4,8 @@ MSsort is a commandline application which organizes mediafiles into folders base
 
 It support commandline arguments aswell as storing parameters in a json file. 
 
+## Usage
+```
 msort -configfile=./msort.config.json
 
 with jsonfile:
@@ -15,6 +17,7 @@ with jsonfile:
 	"overwrite":true
 }
 
+```
 or
 
 msort -source=./  -target=./ -pattern=* -targetpattern=yyyy/mm/dd -verbose=false -archive=false -overwrite=false
