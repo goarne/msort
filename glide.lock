@@ -1,0 +1,8 @@
+hash: cb5d6d7797d7b6a6dc12d312f0ab4229b9fdc5e4a4d0925adf78ff37b3beffdc
+updated: 2016-06-12T22:45:18.833467528+02:00
+imports:
+- name: github.com/goarne/logging
+  version: 2c7e32cb9dbf351e37936ced2026861b35166d2d
+- name: github.com/xiam/exif
+  version: 0164d9cdfc0e4be14837d319cfe205ef7ddd49a3
+devImports: []
