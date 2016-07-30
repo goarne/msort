@@ -45,7 +45,7 @@ func FinishAsync() {
 	waitGrp.Done()
 }
 
-//The function sorts a list based on modified date and returns the sorted array.
+//FindFiles sorts a list based on modified date and returns the sorted array.
 func FindFiles(fileSink chan *ArchiveFile) {
 	FileCount = 0
 	defer close(fileSink)
@@ -114,7 +114,7 @@ func ArchiveFiles(fileSource chan *ArchiveFile) {
 	}
 }
 
-//Structure representing a file which will be archive.
+//ArchiveFile represents a file which will be archive.
 type ArchiveFile struct {
 	os.FileInfo
 	SourcePath string
@@ -221,7 +221,7 @@ func (s *ArchiveFile) copyFile() {
 	debug("Copied ", strconv.FormatInt(n, 10), " bytes for ", s.Name())
 }
 
-//Structure stores configurationparameters provided either through commandline or parameterfile.
+//CmdLineParams stores configurationparameters provided either through commandline or parameterfile.
 type CmdLineParams struct {
 	ConfigFile    string
 	ShallArchive  bool
@@ -233,6 +233,7 @@ type CmdLineParams struct {
 	TargetPattern string
 }
 
+//ReadConfig reads contents of a configfile and stores the data in memory.
 func (c *CmdLineParams) ReadConfig() {
 	fileContent, e := ioutil.ReadFile(c.ConfigFile)
 
