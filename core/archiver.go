@@ -19,14 +19,14 @@ import (
 )
 
 var (
-	//Contains global configuratins for the app.
+	//CmdPrm contains global configuratins for the app.
 	CmdPrm = CmdLineParams{}
 
-	//Counter for files processed.
+	//FileCount count files processed.
 	FileCount int
 
 	//Handles the syncronization of goroutines
-	WaitGrp = sync.WaitGroup{}
+	waitGrp = sync.WaitGroup{}
 
 	//The regex extracts datevalues from an image file in the format yyyy:mm:dd
 	dateRegex, _ = regexp.Compile("(?P<YYYY>\\d{4}):(?P<MM>\\d{2}):(?P<DD>\\d{2})")
@@ -34,6 +34,16 @@ var (
 	//The regex parses the stringvalue yyyy, mm and dd in the format yyyy/mm/dd.  The search is case insensitive. Each field is optional.
 	targetPatternRegex, _ = regexp.Compile("(?P<YYYY>((?i)YYYY)?)/?(?P<MM>((?i)MM)?)/?(?P<DD>((?i)DD)?)")
 )
+
+//StartAsync signals that the client shall wait for goroutine to finish.
+func StartAsync() {
+	waitGrp.Add(1)
+}
+
+//FinishAsync signals that the client shall wait for goroutine to finish.
+func FinishAsync() {
+	waitGrp.Done()
+}
 
 //The function sorts a list based on modified date and returns the sorted array.
 func FindFiles(fileSink chan *ArchiveFile) {
@@ -67,10 +77,13 @@ func FindFiles(fileSink chan *ArchiveFile) {
 	})
 }
 
-//The function copy files received in the channel from source to target.
-//Targetpath is calculated from cameradate.
+//ArchiveFiles function copy files received in the channel from source folder to target folder.
+//Targetpath is extracted from the image file in the following priority.
+//	1. Date and Time (Original)
+//	2. Date and Time (Digitized)
+// 	3. Files modifieddate
 func ArchiveFiles(fileSource chan *ArchiveFile) {
-	defer WaitGrp.Done()
+	defer waitGrp.Done()
 
 	for file := range fileSource {
 

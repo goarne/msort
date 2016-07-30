@@ -31,7 +31,7 @@ func init() {
 
 //Executes the program in two goroutines. One fine and one archiving.
 func main() {
-	WaitGrp.Add(1)
+	StartAsync()
 
 	filesToArchive := make(chan *ArchiveFile)
 
@@ -39,7 +39,7 @@ func main() {
 
 	go ArchiveFiles(filesToArchive)
 
-	WaitGrp.Wait()
+	FinishAsync()
 
 	fmt.Println("Params:", CmdPrm)
 	fmt.Println("Found ", strconv.Itoa(FileCount), " file(s).")
