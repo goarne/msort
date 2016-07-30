@@ -1,0 +1,4 @@
+package: github.com/goarne/msort
+import:
+- package: github.com/goarne/logging
+- package: github.com/xiam/exif
