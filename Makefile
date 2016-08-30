@@ -25,7 +25,7 @@ WEB_BINARY=msortweb
 build:
 	go build -o ./$(BINARY) $(PACKAGE)
 	go build -o ./$(CLIENT_BINARY) $(PACKAGE)/client 
-	go build -o .e/$(WEB_BINARY) $(PACKAGE)/web 
+	go build -o ./$(WEB_BINARY) $(PACKAGE)/web 
 	
 deploy:
 	go build -o $(BUILD_FOLDER)/$(BINARY) $(PACKAGE)
