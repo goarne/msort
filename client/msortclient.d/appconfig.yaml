@@ -1,0 +1,12 @@
+consul:
+ serviceurl : http://localhost:8500/v1/catalog/service/msortweb
+ servicename : msortweb
+tracelogger: 
+ filename : msortclient.d/logs/msort_trace.log
+ size : 100000
+ maxnumberoffiles : 5
+errorlogger: 
+ filename : msortclient.d/logs/msort_error.log
+ size : 100000
+ maxnumberoffiles : 5
+msortcommandconfig : msortclient.d/msort.config.json

@@ -1,0 +1,42 @@
+{
+	"consul": {
+		"registerurl":"http://localhost:8500/v1/agent/service/register",
+		"method":"PUT",
+		"registerinterval" : 10,
+		"payload": {			
+			 	"service": {
+		    	"id": "msortweb1",
+			    "name": "msortweb",
+				"address": "http://localhost:8081/msort",
+				"port":8500,
+				"serviceaddress": "/msort",			    
+				"check": {
+				    "id": "api",
+				    "name": "HTTP API on port 5000",
+				    "http": "http://localhost:8081/msort/health",
+				    "interval": "10s",
+				    "timeout": "30s"
+				  }
+		  	}
+		}
+	},
+	"server": {
+		"port": 8081,
+		"root": "/msort(/)?",
+		"resources": {
+			"findmediafiles": "/find(/)?",
+			"sortmediafiles": "/sort(/)?",
+			"healthcheck": "/health(/)?"
+		}
+	},
+	"tracelogger": {
+		"filename": "msortweb.d/logs/msort_trace.log",
+		"size": 100000,
+		"maxNumberOfFiles": 5
+	},
+	"errorlogger": {
+		"filename": "msortweb.d/logs/msort_error.log",
+		"size": 100000,
+		"maxNumberOfFiles": 5
+	}
+}

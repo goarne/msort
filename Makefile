@@ -14,21 +14,18 @@ CONFIG_FILE=msort.config.json
 BINARY=msort
 CONFIG_FOLDER=msort.d
 
-
 CLIENT_CONFIG_FILE=appconfig.yaml
 CLIENT_BINARY=msortclient
 CLIENT_CONFIG_FOLDER=msortclient.d
-
 
 WEB_CONFIG_FILE=appconfig.json
 WEB_CONFIG_FOLDER=msortweb.d
 WEB_BINARY=msortweb
 
-
 build:
 	go build -o ./$(BINARY) $(PACKAGE)
 	go build -o ./$(CLIENT_BINARY) $(PACKAGE)/client 
-	go build -o ./$(WEB_BINARY) $(PACKAGE)/web 
+	go build -o .e/$(WEB_BINARY) $(PACKAGE)/web 
 	
 deploy:
 	go build -o $(BUILD_FOLDER)/$(BINARY) $(PACKAGE)
@@ -47,9 +44,9 @@ update-dependencies:
 	glide up -s -v -u install
 
 clean: 
-	rm -rf $(BUILD_FOLDER)/$(CONFIG_FOLDER) $(BUILD_FOLDER)/$(BINARY) $(BINARY)
-	rm -rf $(BUILD_FOLDER)/$(CLIENT_CONFIG_FOLDER) $(BUILD_FOLDER)/$(CLIENT_BINARY) $(CLIENT_BINARY)
-	rm -rf $(BUILD_FOLDER)/$(WEB_CONFIG_FOLDER) $(BUILD_FOLDER)/$(WEB_BINARY) $(WEB_BINARY)
+	rm -rf $(BUILD_FOLDER)/$(CONFIG_FOLDER) $(BUILD_FOLDER)/$(BINARY) $(BINARY) ./$(CONFIG_FOLDER)/logs
+	rm -rf $(BUILD_FOLDER)/$(CLIENT_CONFIG_FOLDER) $(BUILD_FOLDER)/$(CLIENT_BINARY) $(CLIENT_BINARY) client/$(CLIENT_CONFIG_FOLDER)/logs
+	rm -rf $(BUILD_FOLDER)/$(WEB_CONFIG_FOLDER) $(BUILD_FOLDER)/$(WEB_BINARY) $(WEB_BINARY) web/$(WEB_CONFIG_FOLDER)/logs
 	
 	go clean $(PACKAGE)
 	go clean $(PACKAGE)/client 
