@@ -2,7 +2,7 @@
 	"consul": {
 		"registerurl":"http://localhost:8500/v1/agent/service/register",
 		"method":"PUT",
-		"registerinterval" : 10,
+		"registerinterval" : 15,
 		"payload": {			
 			 	"service": {
 		    	"id": "msortweb1",

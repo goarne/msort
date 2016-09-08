@@ -11,7 +11,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
+	//"time"
 
 	"github.com/goarne/logging"
 	"github.com/goarne/msort/core"
@@ -28,8 +28,8 @@ type filesFound struct {
 }
 
 func init() {
-
 	appConfig = lastAppKonfig()
+	StartConsulClient(appConfig.Consul)
 
 	rotatingTraceWriter := logging.CreateRotatingWriter(appConfig.Tracelogger)
 	rotatingErrorWriter := logging.CreateRotatingWriter(appConfig.ErrorLogger)
@@ -44,7 +44,6 @@ func init() {
 }
 
 func main() {
-	go registerService()
 
 	router := createWebRouter()
 
@@ -53,20 +52,6 @@ func main() {
 	}
 
 	logging.Trace.Println("Server stopped.")
-}
-
-func registerService() {
-	for {
-		if err := RegisterToConsul(appConfig.Consul.Payload.RegistryService); err != nil {
-			logging.Error.Println(err)
-			//time.Sleep(time.Second * time.Duration(appConfig.Consul.RegisterInterval))
-
-		} else {
-			logging.Trace.Println("Registered to consul:", appConfig.Consul.Registerurl)
-			//break
-		}
-		time.Sleep(time.Second * time.Duration(appConfig.Consul.RegisterInterval))
-	}
 }
 
 func createWebRouter() *web.WebRouter {
@@ -86,6 +71,7 @@ func createWebRouter() *web.WebRouter {
 
 func httpGetHealthCheck(resp http.ResponseWriter, req *http.Request) {
 	resp.Write([]byte("Ok!"))
+	RegisterCheckAlive()
 }
 
 func httpGetSample(resp http.ResponseWriter, req *http.Request) {

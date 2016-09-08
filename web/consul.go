@@ -6,14 +6,62 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
+	"time"
+
+	"github.com/goarne/logging"
 )
 
+var (
+	health  chan bool
+	timeout chan bool
+)
+
+func StartConsulClient(cs ConsulConfig) {
+	timeout = make(chan bool, 1)
+	health = make(chan bool)
+
+	go registerService(cs)
+	go checkTimeout(cs)
+}
+
+func RegisterCheckAlive() {
+	health <- true
+}
+
+func checkTimeout(cs ConsulConfig) {
+	for {
+		time.Sleep(time.Second * time.Duration(cs.RegisterInterval))
+		timeout <- true
+	}
+}
+
+func registerService(cs ConsulConfig) {
+	defer close(timeout)
+	defer close(health)
+
+	for {
+		select {
+		case <-health:
+			logging.Trace.Println("Healthchec ok.")
+
+			// a read from healthcheck has occurred
+		case <-timeout:
+			// the read from ch has timed out
+			if err := registerToConsul(cs); err != nil {
+				logging.Error.Println(err)
+			}
+
+			logging.Trace.Println("Registerred to consul:", cs.Registerurl)
+		}
+	}
+}
+
 //RegisterToConsul method registers service to a Consul instance.
-func RegisterToConsul(pl Service) error {
-	msortwebService, _ := json.Marshal(pl)
+func registerToConsul(cs ConsulConfig) error {
+	msortwebService, _ := json.Marshal(cs.Payload.RegistryService)
 
 	client := &http.Client{}
-	req, err := http.NewRequest(appConfig.Consul.Method, appConfig.Consul.Registerurl, bytes.NewReader(msortwebService))
+	req, err := http.NewRequest(cs.Method, cs.Registerurl, bytes.NewReader(msortwebService))
 
 	if err != nil {
 		return errors.New("Could not create new request." + err.Error())
