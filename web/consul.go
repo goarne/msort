@@ -12,7 +12,9 @@ import (
 )
 
 var (
-	health  chan bool
+	lastHealthCheck time.Time
+	health          chan bool
+
 	timeout chan bool
 )
 
@@ -31,7 +33,10 @@ func RegisterCheckAlive() {
 func checkTimeout(cs ConsulConfig) {
 	for {
 		time.Sleep(time.Second * time.Duration(cs.RegisterInterval))
-		timeout <- true
+
+		if time.Since(lastHealthCheck) > time.Second*time.Duration(cs.RegisterInterval) {
+			timeout <- true
+		}
 	}
 }
 
@@ -43,7 +48,7 @@ func registerService(cs ConsulConfig) {
 		select {
 		case <-health:
 			logging.Trace.Println("Healthchec ok.")
-
+			lastHealthCheck = time.Now()
 			// a read from healthcheck has occurred
 		case <-timeout:
 			// the read from ch has timed out
