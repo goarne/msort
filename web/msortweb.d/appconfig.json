@@ -2,7 +2,7 @@
 	"consul": {
 		"registerurl":"http://localhost:8500/v1/agent/service/register",
 		"method":"PUT",
-		"registerinterval" : 2,
+		"registerinterval" : 10,
 		"payload": {			
 			 	"service": {
 		    	"id": "msortweb1",
@@ -14,7 +14,7 @@
 				    "id": "api",
 				    "name": "HTTP API on port 5000",
 				    "http": "http://localhost:8081/msort/health",
-				    "interval": "1s",
+				    "interval": "10s",
 				    "timeout": "30s"
 				  }
 		  	}

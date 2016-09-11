@@ -14,8 +14,7 @@ import (
 var (
 	lastHealthCheck time.Time
 	health          chan bool
-
-	timeout chan bool
+	timeout         chan bool
 )
 
 func StartConsulClient(cs ConsulConfig) {
@@ -35,6 +34,7 @@ func checkTimeout(cs ConsulConfig) {
 		time.Sleep(time.Second * time.Duration(cs.RegisterInterval))
 
 		if time.Since(lastHealthCheck) > time.Second*time.Duration(cs.RegisterInterval) {
+			logging.Trace.Println("Have not received a checkalive within", cs.RegisterInterval, "seconds.")
 			timeout <- true
 		}
 	}
@@ -54,9 +54,9 @@ func registerService(cs ConsulConfig) {
 			// the read from ch has timed out
 			if err := registerToConsul(cs); err != nil {
 				logging.Error.Println(err)
+			} else {
+				logging.Trace.Println("Registered to consul:", cs.Registerurl)
 			}
-
-			logging.Trace.Println("Registerred to consul:", cs.Registerurl)
 		}
 	}
 }

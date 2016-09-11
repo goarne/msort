@@ -40,7 +40,7 @@ deploy:
 	go build -o $(BUILD_FOLDER)/$(WEB_BINARY) $(PACKAGE)/web
 	test -d "$(BUILD_FOLDER)/$(WEB_CONFIG_FOLDER)" ||  mkdir "$(BUILD_FOLDER)/$(WEB_CONFIG_FOLDER)"
 	cp web/$(WEB_CONFIG_FOLDER)/$(WEB_CONFIG_FILE) $(BUILD_FOLDER)/$(WEB_CONFIG_FOLDER)
-		
+
 update-dependencies:
 	glide up -s -v -u install
 
