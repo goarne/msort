@@ -92,7 +92,7 @@ func httpPostFindFiles(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	core.StartAsync()
+	core.StartAsync(1)
 
 	fileList := make(chan *core.ArchiveFile)
 
@@ -104,7 +104,7 @@ func httpPostFindFiles(resp http.ResponseWriter, req *http.Request) {
 		foundFiles.Files = append(foundFiles.Files, file)
 	}
 
-	defer core.FinishAsync()
+	defer core.WaitAsync()
 	foundFiles.NumberOfFilesFound = core.FileCount
 
 	encoder := json.NewEncoder(resp)
@@ -122,7 +122,7 @@ func httpPostSortFiles(resp http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	core.StartAsync()
+	core.StartAsync(2)
 
 	filesToArchive := make(chan *core.ArchiveFile)
 
@@ -130,7 +130,7 @@ func httpPostSortFiles(resp http.ResponseWriter, req *http.Request) {
 
 	go core.ArchiveFiles(filesToArchive)
 
-	core.FinishAsync()
+	core.WaitAsync()
 	kvittering := "Found " + strconv.Itoa(core.FileCount) + " file(s)."
 	logging.Trace.Println(kvittering)
 	resp.Write([]byte(kvittering))

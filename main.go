@@ -5,42 +5,42 @@ import (
 	"fmt"
 	"strconv"
 
-	. "github.com/goarne/msort/core"
+	"github.com/goarne/msort/core"
 )
 
 //Function builds the appconfiguration before the main part of the app.
 func init() {
 
-	flag.StringVar(&CmdPrm.ConfigFile, "configfile", "", "Configurationfile for the application.")
+	flag.StringVar(&core.CmdPrm.ConfigFile, "configfile", "", "Configurationfile for the application.")
 
-	flag.BoolVar(&CmdPrm.ShallArchive, "archive", false, "Flag tells the application to copy the archiving.")
-	flag.BoolVar(&CmdPrm.Verbose, "verbose", false, "Prints debug information.")
-	flag.BoolVar(&CmdPrm.Overwrite, "overwrite", false, "Checks if existing files shall be overwritten.")
+	flag.BoolVar(&core.CmdPrm.ShallArchive, "archive", false, "Flag tells the application to copy the archiving.")
+	flag.BoolVar(&core.CmdPrm.Verbose, "verbose", false, "Prints debug information.")
+	flag.BoolVar(&core.CmdPrm.Overwrite, "overwrite", false, "Checks if existing files shall be overwritten.")
 
-	flag.StringVar(&CmdPrm.FilePattern, "pattern", "*", "Regex-pattern for filenames to be copied.")
-	flag.StringVar(&CmdPrm.Source, "source", "./", "Namme of sourcefolder, when other than current working folder.")
+	flag.StringVar(&core.CmdPrm.FilePattern, "pattern", "*", "Regex-pattern for filenames to be copied.")
+	flag.StringVar(&core.CmdPrm.Source, "source", "./", "Namme of sourcefolder, when other than current working folder.")
 
-	flag.StringVar(&CmdPrm.Target, "target", "./", "Name of target folder, when other than current working folder.")
-	flag.StringVar(&CmdPrm.TargetPattern, "targetpattern", "yyyy/mm/dd", "Structure of targetfolder.")
+	flag.StringVar(&core.CmdPrm.Target, "target", "./", "Name of target folder, when other than current working folder.")
+	flag.StringVar(&core.CmdPrm.TargetPattern, "targetpattern", "yyyy/mm/dd", "Structure of targetfolder.")
 
 	flag.Parse()
-	if CmdPrm.ConfigFile != "" {
-		CmdPrm.ReadConfig()
+	if core.CmdPrm.ConfigFile != "" {
+		core.CmdPrm.ReadConfig()
 	}
 }
 
 //Executes the program in two goroutines. One fine and one archiving.
 func main() {
-	StartAsync()
+	core.StartAsync(2)
 
-	filesToArchive := make(chan *ArchiveFile)
+	filesToArchive := make(chan *core.ArchiveFile)
 
-	go FindFiles(filesToArchive)
+	go core.FindFiles(filesToArchive)
 
-	go ArchiveFiles(filesToArchive)
+	go core.ArchiveFiles(filesToArchive)
 
-	FinishAsync()
+	core.WaitAsync()
 
-	fmt.Println("Params:", CmdPrm)
-	fmt.Println("Found ", strconv.Itoa(FileCount), " file(s).")
+	fmt.Println("Params:", core.CmdPrm)
+	fmt.Println("Found ", strconv.Itoa(core.FileCount), " file(s).")
 }

@@ -36,19 +36,22 @@ var (
 )
 
 //StartAsync signals that the client shall wait for goroutine to finish.
-func StartAsync() {
-	waitGrp.Add(1)
+func StartAsync(num int) {
+	waitGrp.Add(num)
 }
 
 //FinishAsync signals that the client shall wait for goroutine to finish.
-func FinishAsync() {
-	waitGrp.Done()
+func WaitAsync() {
+	waitGrp.Wait()
 }
 
 //FindFiles sorts a list based on modified date and returns the sorted array.
 func FindFiles(fileSink chan *ArchiveFile) {
-	FileCount = 0
+
 	defer close(fileSink)
+	defer waitGrp.Done()
+
+	FileCount = 0
 	dir := filepath.Dir(CmdPrm.Source)
 
 	filepath.Walk(dir, func(sourcePath string, f os.FileInfo, err error) error {
@@ -56,6 +59,7 @@ func FindFiles(fileSink chan *ArchiveFile) {
 			logging.Error.Println(err.Error())
 			return nil
 		}
+
 		if f.IsDir() == true {
 			return nil
 		}
@@ -69,6 +73,7 @@ func FindFiles(fileSink chan *ArchiveFile) {
 		}
 
 		foundFile := &ArchiveFile{f, sourcePath, ""}
+
 		debug("Found file: ", f.Name())
 
 		fileSink <- foundFile

@@ -1,6 +1,7 @@
 {
-	"shallarchive":true,
+	"shallarchive":false,
 	"target":"archived/",
 	"targetpattern":"yyyy/mm/dd/",
-	"overwrite":true
+	"overwrite":false,
+	"verbose":false
 }
