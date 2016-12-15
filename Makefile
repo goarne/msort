@@ -22,6 +22,7 @@ WEB_CONFIG_FILE=appconfig.json
 WEB_CONFIG_FOLDER=msortweb.d
 WEB_BINARY=msortweb
 
+
 build:
 	go build -o ./$(BINARY) $(PACKAGE)
 	go build -o ./$(CLIENT_BINARY) $(PACKAGE)/client 
