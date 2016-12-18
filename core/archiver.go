@@ -111,7 +111,6 @@ func ArchiveFiles(fileSource chan *ArchiveFile) {
 			if strings.Contains(strings.ToLower(reply), "n") {
 				continue
 			}
-
 		}
 
 		debug("Archiving:", file.TargetPath+file.Name())
