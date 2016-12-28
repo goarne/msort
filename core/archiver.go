@@ -88,6 +88,7 @@ func FindFiles(fileSink chan *ArchiveFile) {
 //	2. Date and Time (Digitized)
 // 	3. Files modifieddate
 func ArchiveFiles(fileSource chan *ArchiveFile) {
+
 	defer waitGrp.Done()
 
 	for file := range fileSource {

@@ -9,30 +9,53 @@ import (
 )
 
 var (
-	testDirectory              = "./testfolder/"
-	testFileName        string = "testfilename"
-	ArchiverFileChannel chan *ArchiveFile
+	testfileRootDirectory        = "./testfolder/"
+	testFileName          string = "testfilename"
+	ArchiverFileChannel   chan *ArchiveFile
 )
 
 func TestSuite(t *testing.T) {
 	setCmmdPrmForArchiverUnderTest(testFileName)
 
-	createTestFile(testDirectory, testFileName)
-	defer os.RemoveAll(testDirectory)
+	createTestFile(testfileRootDirectory, testFileName)
+	defer os.RemoveAll(testfileRootDirectory)
 
-	setUpArchiver()
+	setUpArchiver(2)
+	t.Run("Should find file and archive file (integrationtest).", shouldFindAndArchiveFileAsync)
+
+	setUpArchiver(1)
 	t.Run("Should find file.", shouldFindFile)
 
-	setUpArchiver()
+	setUpArchiver(1)
 	t.Run("Should not find file", shouldNotFindFile)
 
-	setUpArchiver()
+	setUpArchiver(1)
 	t.Run("Shall archive file", shouldArchiveFile)
+}
+
+func shouldFindAndArchiveFileAsync(t *testing.T) {
+
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("Channel was not closed.")
+		}
+	}()
+
+	go FindFiles(ArchiverFileChannel)
+	go ArchiveFiles(ArchiverFileChannel)
+	WaitAsync()
+
+	if fn, _ := archivedFileExists(testFileName); fn == nil {
+		t.Fail()
+	}
+
+	//The statement will cause a panic and make the defered function fail
+	ArchiverFileChannel <- &ArchiveFile{}
 }
 
 func shouldArchiveFile(t *testing.T) {
 	af := &ArchiveFile{}
-	af.FileInfo, _ = os.Stat(testDirectory + testFileName)
+	af.FileInfo, _ = os.Stat(testfileRootDirectory + testFileName)
 	af.SourcePath = CmdPrm.Source + testFileName
 
 	go func() {
@@ -40,19 +63,16 @@ func shouldArchiveFile(t *testing.T) {
 		defer close(ArchiverFileChannel)
 	}()
 
-	ArchiveFiles(ArchiverFileChannel)
+	go ArchiveFiles(ArchiverFileChannel)
 
 	if fn, _ := archivedFileExists(testFileName); fn == nil {
-		println("target:", fn.Name())
 		t.Fail()
 	}
-
-	cleanupFile(af.TargetPath+af.Name(), t)
 }
 
 func shouldFindFile(t *testing.T) {
 
-	FindFiles(ArchiverFileChannel)
+	go FindFiles(ArchiverFileChannel)
 
 	if testFileFound := <-ArchiverFileChannel; testFileFound == nil {
 		t.Fail()
@@ -62,7 +82,7 @@ func shouldFindFile(t *testing.T) {
 func shouldNotFindFile(t *testing.T) {
 	CmdPrm.FilePattern = "patternNotMatchingTestfile"
 
-	FindFiles(ArchiverFileChannel)
+	go FindFiles(ArchiverFileChannel)
 
 	if testFileFound := <-ArchiverFileChannel; testFileFound != nil {
 		t.Fail()
@@ -71,8 +91,8 @@ func shouldNotFindFile(t *testing.T) {
 
 //Below are helper functions for setting up unittest and verifying results.
 func setCmmdPrmForArchiverUnderTest(fn string) {
-	CmdPrm.Source = testDirectory
-	CmdPrm.Target = testDirectory
+	CmdPrm.Source = testfileRootDirectory
+	CmdPrm.Target = testfileRootDirectory
 	CmdPrm.FilePattern = fn
 	CmdPrm.TargetPattern = "YYYY/MM/DD"
 	CmdPrm.ShallArchive = true
@@ -85,12 +105,12 @@ func archivedFileExists(fn string) (os.FileInfo, error) {
 	month := strconv.Itoa(int(time.Now().Month()))
 	day := strconv.Itoa(time.Now().Day())
 
-	return os.Stat(testDirectory + year + "/" + month + "/" + day + "/" + fn)
+	return os.Stat(testfileRootDirectory + year + "/" + month + "/" + day + "/" + fn)
 }
 
-func setUpArchiver() {
+func setUpArchiver(numAsync int) {
 	ArchiverFileChannel = make(chan *ArchiveFile, 1)
-	StartAsync(1)
+	StartAsync(numAsync)
 }
 
 func createTestFile(path string, fn string) {

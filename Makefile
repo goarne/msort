@@ -24,11 +24,12 @@ WEB_BINARY=msortweb
 
 
 build:
+	go test ./...
 	go build -o ./$(BINARY) $(PACKAGE)
 	go build -o ./$(CLIENT_BINARY) $(PACKAGE)/client 
 	go build -o ./$(WEB_BINARY) $(PACKAGE)/web 
 	
-deploy:
+deploy:	
 	go build -o $(BUILD_FOLDER)/$(BINARY) $(PACKAGE)
 	test -d "$(BUILD_FOLDER)/$(CONFIG_FOLDER)" ||  mkdir "$(BUILD_FOLDER)/$(CONFIG_FOLDER)"
 	cp $(CONFIG_FOLDER)/$(CONFIG_FILE) $(BUILD_FOLDER)/$(CONFIG_FOLDER)
