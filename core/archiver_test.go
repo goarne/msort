@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
+	//"github.com/goarne/logging"
 )
 
 var (
@@ -15,6 +17,9 @@ var (
 )
 
 func TestSuite(t *testing.T) {
+	//	tracerLogger := logging.CreateLogWriter(os.Stdout)
+	//	logging.InitLoggers(tracerLogger, tracerLogger, tracerLogger, tracerLogger)
+
 	setCmmdPrmForArchiverUnderTest(testFileName)
 
 	createTestFile(testfileRootDirectory, testFileName)
@@ -23,14 +28,6 @@ func TestSuite(t *testing.T) {
 	setUpArchiver(2)
 	t.Run("Should find file and archive file (integrationtest).", shouldFindAndArchiveFileAsync)
 
-	setUpArchiver(1)
-	t.Run("Should find file.", shouldFindFile)
-
-	setUpArchiver(1)
-	t.Run("Should not find file", shouldNotFindFile)
-
-	setUpArchiver(1)
-	t.Run("Shall archive file", shouldArchiveFile)
 }
 
 func shouldFindAndArchiveFileAsync(t *testing.T) {
@@ -97,6 +94,7 @@ func setCmmdPrmForArchiverUnderTest(fn string) {
 	CmdPrm.TargetPattern = "YYYY/MM/DD"
 	CmdPrm.ShallArchive = true
 	CmdPrm.Overwrite = false
+	CmdPrm.Verbose = false
 }
 
 func archivedFileExists(fn string) (os.FileInfo, error) {

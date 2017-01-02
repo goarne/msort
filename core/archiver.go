@@ -35,6 +35,13 @@ var (
 	targetPatternRegex, _ = regexp.Compile("(?P<YYYY>((?i)YYYY)?)/?(?P<MM>((?i)MM)?)/?(?P<DD>((?i)DD)?)")
 )
 
+func init() {
+	tracerLogger := logging.CreateLogWriter(os.Stdout)
+	errorLogger := logging.CreateLogWriter(os.Stdout)
+
+	logging.InitLoggers(tracerLogger, tracerLogger, errorLogger, errorLogger)
+}
+
 //StartAsync signals that the client shall wait for goroutine to finish.
 func StartAsync(num int) {
 	waitGrp.Add(num)
