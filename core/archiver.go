@@ -181,12 +181,12 @@ func (s *ArchiveFile) extractPictureTakenDatepart() (year string, month string, 
 }
 func (s *ArchiveFile) extractFileModifiedDate() (year string, month string, day string) {
 	year = strconv.Itoa(s.ModTime().Year())
-	month = s.paddWithLeadingZero(int(s.ModTime().Month()))
-	day = s.paddWithLeadingZero(s.ModTime().Day())
+	month = paddWithLeadingZero(int(s.ModTime().Month()))
+	day = paddWithLeadingZero(s.ModTime().Day())
 	return year, month, day
 }
 
-func (s *ArchiveFile) paddWithLeadingZero(num int) string {
+func paddWithLeadingZero(num int) string {
 	if num < 10 {
 		return "0" + strconv.Itoa(num)
 	}

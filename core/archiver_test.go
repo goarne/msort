@@ -102,9 +102,10 @@ func setCmmdPrmForArchiverUnderTest(fn string) {
 func archivedFileExists(fn string) (os.FileInfo, error) {
 
 	year := strconv.Itoa(time.Now().Year())
-	month := strconv.Itoa(int(time.Now().Month()))
-	day := strconv.Itoa(time.Now().Day())
+	month := paddWithLeadingZero(int(time.Now().Month()))
+	day := paddWithLeadingZero(time.Now().Day())
 
+	println(testfileRootDirectory + year + "/" + month + "/" + day + "/" + fn)
 	return os.Stat(testfileRootDirectory + year + "/" + month + "/" + day + "/" + fn)
 }
 
