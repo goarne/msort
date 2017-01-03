@@ -28,6 +28,14 @@ func TestSuite(t *testing.T) {
 	setUpArchiver(2)
 	t.Run("Should find file and archive file (integrationtest).", shouldFindAndArchiveFileAsync)
 
+	setUpArchiver(1)
+	t.Run("Should find file.", shouldFindFile)
+
+	setUpArchiver(1)
+	t.Run("Shall archive file", shouldArchiveFile)
+
+	setUpArchiver(1)
+	t.Run("Should not find file", shouldNotFindFile)
 }
 
 func shouldFindAndArchiveFileAsync(t *testing.T) {
@@ -40,6 +48,7 @@ func shouldFindAndArchiveFileAsync(t *testing.T) {
 
 	go FindFiles(ArchiverFileChannel)
 	go ArchiveFiles(ArchiverFileChannel)
+
 	WaitAsync()
 
 	if fn, _ := archivedFileExists(testFileName); fn == nil {

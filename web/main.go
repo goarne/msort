@@ -180,5 +180,4 @@ func parseCommand(req *http.Request) error {
 	core.CmdPrm.Verbose = cmdPrm.Verbose
 
 	return nil
-
 }
