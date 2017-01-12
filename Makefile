@@ -58,4 +58,16 @@ clean:
 
 install:
 	glide install
-		
+	
+docker-build:
+	docker stop msortweb
+	docker rm msortweb
+	docker rmi goarne/msortweb
+
+	docker build -t goarne/msortweb .
+	docker run -d -p 8081:8081 --name msortweb goarne/msortweb
+
+docker-run: 
+	docker run -d -p 8081:8081 --name msortweb goarne/msortweb
+
+
