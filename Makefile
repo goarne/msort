@@ -27,25 +27,38 @@ DOCKER_IMAGE_VERSION=latest
 DOCKER_CONTAINER=msortweb
 #DOCKER_CONTAINER_RUNNING=$(docker ps | grep $(DOCKER_CONTAINER))
 
-build:
-	go test ./...
-	go build -o ./$(BINARY) $(PACKAGE)
-	go build -o ./$(CLIENT_BINARY) $(PACKAGE)/client 
-	go build -o ./$(WEB_BINARY) $(PACKAGE)/web 
+test:
+	go test ./...	
 	
-deploy:	
+$(BINARY): test
+	go build -o ./$(BINARY) $(PACKAGE)
+
+$(CLIENT_BINARY): test
+	go build -o ./$(CLIENT_BINARY) $(PACKAGE)/client 
+	
+$(WEB_BINARY): test
+	go build -o ./$(WEB_BINARY) $(PACKAGE)/web
+
+build: $(BINARY) $(CLIENT_BINARY) $(WEB_BINARY)
+
+deploy-$(BINARY):
 	go build -o $(BUILD_FOLDER)/$(BINARY) $(PACKAGE)
 	test -d "$(BUILD_FOLDER)/$(CONFIG_FOLDER)" ||  mkdir "$(BUILD_FOLDER)/$(CONFIG_FOLDER)"
 	cp $(CONFIG_FOLDER)/$(CONFIG_FILE) $(BUILD_FOLDER)/$(CONFIG_FOLDER)
 
+deploy-$(CLIENT_BINARY):
 	go build -o $(BUILD_FOLDER)/$(CLIENT_BINARY) $(PACKAGE)/client
 	test -d "$(BUILD_FOLDER)/$(CLIENT_CONFIG_FOLDER)" ||  mkdir "$(BUILD_FOLDER)/$(CLIENT_CONFIG_FOLDER)"
 	cp client/$(CLIENT_CONFIG_FOLDER)/$(CLIENT_CONFIG_FILE) $(BUILD_FOLDER)/$(CLIENT_CONFIG_FOLDER)
 	cp client/$(CLIENT_CONFIG_FOLDER)/$(CONFIG_FILE) $(BUILD_FOLDER)/$(CLIENT_CONFIG_FOLDER)
 	
+deploy-$(WEB_BINARY):
 	go build -o $(BUILD_FOLDER)/$(WEB_BINARY) $(PACKAGE)/web
 	test -d "$(BUILD_FOLDER)/$(WEB_CONFIG_FOLDER)" ||  mkdir "$(BUILD_FOLDER)/$(WEB_CONFIG_FOLDER)"
 	cp web/$(WEB_CONFIG_FOLDER)/$(WEB_CONFIG_FILE) $(BUILD_FOLDER)/$(WEB_CONFIG_FOLDER)
+
+
+deploy: deploy-$(BINARY) deploy-$(CLIENT_BINARY) deploy-$(WEB_BINARY)
 
 update-dependencies:
 	glide up -s -v -u install
