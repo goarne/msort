@@ -22,6 +22,10 @@ WEB_CONFIG_FILE=appconfig.json
 WEB_CONFIG_FOLDER=msortweb.d
 WEB_BINARY=msortweb
 
+DOCKER_IMAGE=goarne/msortweb
+DOCKER_IMAGE_VERSION=latest
+DOCKER_CONTAINER=msortweb
+#DOCKER_CONTAINER_RUNNING=$(docker ps | grep $(DOCKER_CONTAINER))
 
 build:
 	go test ./...
@@ -55,19 +59,26 @@ clean:
 	go clean $(PACKAGE)/client 
 	go clean $(PACKAGE)/web 
 	
-
 install:
 	glide install
 	
-docker-build:
-	docker stop msortweb
-	docker rm msortweb
-	docker rmi goarne/msortweb
+docker-build: build
+ifneq "$(docker ps | grep $(DOCKER_CONTAINER))" ""
+	docker stop $(DOCKER_CONTAINER)
+	docker rm $(DOCKER_CONTAINER)
+endif
 
-	docker build -t goarne/msortweb .
-	docker run -d -p 8081:8081 --name msortweb goarne/msortweb
+ifneq "$(docker images | grep $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION))" ""
+	docker rmi $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION)
+endif
+	
+	docker build -t $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION) .
+
 
 docker-run: 
-	docker run -d -p 8081:8081 --name msortweb goarne/msortweb
+ifneq "$(docker ps | grep $(DOCKER_CONTAINER))" ""
+	docker stop $(DOCKER_CONTAINER)
+	docker rm $(DOCKER_CONTAINER)
+endif
 
-
+	docker run -d -p 8081:8081 --name $(DOCKER_CONTAINER) $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION)
