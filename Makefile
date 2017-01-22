@@ -25,7 +25,9 @@ WEB_BINARY=msortweb
 DOCKER_IMAGE=goarne/msortweb
 DOCKER_IMAGE_VERSION=latest
 DOCKER_CONTAINER=msortweb
-#DOCKER_CONTAINER_RUNNING=$(docker ps | grep $(DOCKER_CONTAINER))
+
+DOCKER_CONTAINER_RUNNING=$(docker ps | grep $(DOCKER_CONTAINER))
+DOCKER_CONTAINER_EXISTS=$(docker ps -as | grep $(DOCKER_CONTAINER))
 
 test:
 	go test ./...	
@@ -76,22 +78,17 @@ install:
 	glide install
 	
 docker-build: build
-ifneq "$(docker ps | grep $(DOCKER_CONTAINER))" ""
+ifneq ($(docker ps | grep $(DOCKER_CONTAINER)), "")
 	docker stop $(DOCKER_CONTAINER)
+endif
+
+ifneq ($(docker ps -as | grep $(DOCKER_CONTAINER)), "")
 	docker rm $(DOCKER_CONTAINER)
 endif
 
-ifneq "$(docker images | grep $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION))" ""
+ifneq ($(docker images | grep $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION)), "")
 	docker rmi $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION)
 endif
 	
 	docker build -t $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION) .
-
-
-docker-run: 
-ifneq "$(docker ps | grep $(DOCKER_CONTAINER))" ""
-	docker stop $(DOCKER_CONTAINER)
-	docker rm $(DOCKER_CONTAINER)
-endif
-
 	docker run -d -p 8081:8081 --name $(DOCKER_CONTAINER) $(DOCKER_IMAGE):$(DOCKER_IMAGE_VERSION)
