@@ -26,9 +26,6 @@ DOCKER_IMAGE=goarne/msortweb
 DOCKER_IMAGE_VERSION=latest
 DOCKER_CONTAINER=msortweb
 
-DOCKER_CONTAINER_RUNNING=$(docker ps | grep $(DOCKER_CONTAINER))
-DOCKER_CONTAINER_EXISTS=$(docker ps -as | grep $(DOCKER_CONTAINER))
-
 test:
 	go test ./...	
 	
