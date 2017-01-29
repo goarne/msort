@@ -1,0 +1,26 @@
+version: '2'
+services:
+ consul:
+  image: consul
+  network_mode: bridge
+  ports:
+  - "8300-8302:8300-8302" 
+  - "8400:8400"
+  - "8301-8302:8301-8302/udp"
+  - "8600:8600"
+  - "8600:8600/udp"
+  - "8500:8500" 
+ registrator:
+  links:
+  - consul:consul  
+  image: gliderlabs/registrator:latest  
+  network_mode: bridge
+  depends_on:
+  - consul
+  entrypoint: /bin/registrator consul://consul:8500
+  volumes:
+  - /var/run/docker.sock:/tmp/docker.sock
+ msortweb:
+  image: goarne/msortweb:latest
+  ports: 
+   - "8081:8081"
