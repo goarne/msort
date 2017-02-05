@@ -11,23 +11,18 @@ services:
   - "8600:8600"
   - "8600:8600/udp"
   - "8500:8500" 
-  networks: 
-   consul_network:  
-    aliases: 
-    - consul
+  network_mode: host
  registrator:
   image: gliderlabs/registrator:latest    
   depends_on:
   - consul
-  entrypoint: /bin/registrator consul://consul:8500
+  entrypoint: /bin/registrator consul://localhost:8500
   volumes:
   - /var/run/docker.sock:/tmp/docker.sock
-  networks: 
-  - consul_network
+  network_mode: host
  msortweb:
   build: .
   image: goarne/msortweb:latest
   ports: 
    - "8081:8081"
-  networks: 
-  - consul_network
+  network_mode: host

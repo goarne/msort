@@ -30,7 +30,7 @@ type filesFound struct {
 func init() {
 	appConfig = lastAppKonfig()
 
-	StartConsulClient(appConfig.Consul)
+	//StartConsulClient(appConfig.Consul)
 
 	rotatingTraceWriter := logging.CreateRotatingWriter(appConfig.Tracelogger)
 	rotatingErrorWriter := logging.CreateRotatingWriter(appConfig.ErrorLogger)
