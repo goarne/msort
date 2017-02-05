@@ -25,6 +25,7 @@ services:
   networks: 
   - consul_network
  msortweb:
+  build: .
   image: goarne/msortweb:latest
   ports: 
    - "8081:8081"
